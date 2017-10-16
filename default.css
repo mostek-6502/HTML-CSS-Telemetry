@@ -1,0 +1,298 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : Oct 7, 2017, 5:09:11 AM
+    Author     : Solar
+*/
+
+html, body, h1, h2, h3, p, ol, ul, li, a {
+    padding: 0px;
+    border: 0px;
+    margin: 0px;
+}
+
+.grid {
+    display: -webkit-flex;
+    display: flex;
+}
+
+.grid2 {
+    display: -webkit-flex;
+    display: flex;
+}
+
+.grid3 {
+    display: -webkit-flex;
+    display: flex;
+}
+
+.grid4 {
+    display: -webkit-flex;
+    display: flex;
+}
+
+.col {
+    background: #ccc;
+    padding: 2px;
+}
+.fixed {
+    background: white;
+}
+
+.EEPROM {
+    background: yellow;
+    list-style-type: none;
+    border: 2px solid black;
+    width: 320px;
+    margin-right: 2px;
+    flex-shrink: 0;
+}
+
+.EEPROM li:first-child {
+    background-color: #FFFFA0;
+    text-align: center;
+    list-style-type: none;
+}
+
+.EEPROM li p {
+    display: inline-block; 
+    list-style-type: none;
+}
+
+.EEPROM li p:first-child {
+    width: 180px;
+    text-align: right;
+    list-style-type: none;
+}
+
+.TEMPS {
+    background: lightpink;
+    list-style-type: none;
+    border: 2px solid black;
+    width: 560px;
+    margin-right: 2px;
+    flex-shrink: 0;
+}
+
+.TEMPS li:first-child {
+    background-color: #FFFFA0;
+    text-align: center;
+    list-style-type: none;
+}
+
+.TEMPS li p {
+    display: inline-block;
+    list-style-type: none;
+}
+
+/* label */
+.TEMPS li p:nth-child(1) {
+    width: 120px;
+    text-align: right;
+    list-style-type: none;
+    /* background-color: #AAAAAA; */
+}
+
+/* degree f  */
+.TEMPS li p:nth-child(2) {
+    width: 53px;
+    text-align: right;
+    list-style-type: none;
+    /* background-color: #888888; */
+}
+
+/* degree c */
+.TEMPS li p:nth-child(3) {
+    width: 53px;
+    text-align: right;
+    list-style-type: none;
+    /* background-color: #666666; */
+}
+
+/* status */
+.TEMPS li p:nth-child(4) {
+    width: 75px;
+    text-align: right;
+    list-style-type: none;
+    /* background-color: #444444; */
+}
+
+/* ROM Code */
+.TEMPS li p:nth-child(5) {
+    width: 218px;
+    text-align: right;
+    list-style-type: none;
+    /* background-color: #444444; */
+}
+
+.RUNTIME {
+    background: #90EE90;
+    list-style-type: none;
+    border: 2px solid black;
+    width: 320px;
+    margin-right: 2px;
+    flex-shrink: 0;
+}
+
+.RUNTIME li:first-child {
+    background-color: #FFFFA0;
+    text-align: center;
+    list-style-type: none;
+}
+
+.RUNTIME li p {
+    display: inline-block; 
+    list-style-type: none;
+}
+
+.RUNTIME li p:first-child {
+    width: 200px;
+    text-align: right;
+    list-style-type: none;
+}
+
+.DISH {
+    background: #F59B00;
+    list-style-type: none;
+    border: 2px solid black;
+    margin-right: 2px;
+    margin-top: 2px;
+    width: 490px;
+    /* height: 600px; */
+}
+
+.DISH li:first-child {
+    background-color: #FFFFA0;
+    text-align: center;
+    list-style-type: none;
+}
+
+.DISH li p {
+    display: inline-block;
+    list-style-type: none;
+}
+
+.DISH li p:first-child {
+    width: 120px;
+    text-align: right;
+    list-style-type: none;
+}
+
+
+.SEN_WSFP {
+    background: #f6d8ac;
+    list-style-type: none;
+    border: 2px solid black;
+    width: 230px;
+    margin-right: 2px;
+    margin-top: 2px;
+    /* height: 600px; */
+}
+
+.SEN_WSFP li:first-child {
+    background-color: #FFFFA0;
+    text-align: center;
+    list-style-type: none;
+}
+
+.SEN_WSFP li p {
+    display: inline-block;
+    list-style-type: none;
+}
+
+.SEN_WSFP li p:first-child {
+    width: 130px;
+    text-align: right;
+    list-style-type: none;
+}
+
+.PUMPS {
+    background: lightblue;
+    list-style-type: none;
+    border: 2px solid black;
+    width: 480px;
+    margin-top: 2px;
+    /* height: 600px; */
+}
+
+.PUMPS li:first-child {
+    background-color: #FFFFA0;
+    text-align: center;
+    list-style-type: none;
+}
+
+.PUMPS li p {
+    display: inline-block;
+    list-style-type: none;
+}
+
+.PUMPS li p:nth-child(1) {
+    width: 100px;
+    text-align: right;
+    list-style-type: none;
+}
+
+.PUMPS li p:nth-child(2) {
+    width: 35px;
+    text-align: right;
+    list-style-type: none;
+}
+
+.PUMPS li p:nth-child(3) {
+    padding-left: 10px;
+    text-align: right;
+    list-style-type: none;
+}
+
+.DGP {
+    background: #FFFFA0;
+    list-style-type: none;
+    border: 2px solid black;
+    width: 275px;
+    margin-top: 2px;
+}
+
+.DGP li p {
+    display: inline-block;
+    list-style-type: none;
+}
+
+.DGP li p:nth-child(1) {
+    background-color: #FFFFA0;
+    text-align: left;
+    list-style-type: none;
+    width: 150px;
+}
+
+.DGP li p:nth-child(2) {
+    background-color: #FFFFA0;
+    text-align: left;
+    list-style-type: none;
+}
+
+.EMP {
+    background: lightpink;
+    list-style-type: none;
+    border: 2px solid black;
+    width: 1000px;
+    margin-top: 2px;
+}
+
+.EMP li p {
+    display: inline-block;
+    list-style-type: none;
+}
+
+.EMP li p:nth-child(1) {
+    width: 65px;
+    text-align: left;
+    list-style-type: none;
+}
+
+.EMP li p:nth-child(2) {
+    text-align: left;
+    list-style-type: none;
+}

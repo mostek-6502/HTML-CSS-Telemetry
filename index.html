@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<!--
+    Name: Rick Faszold
+    Company: XEn, LLC  (Missouri)
+    Date: October 15th, 2017
+    Purpose: Solar Thermal - Control Board Output for a Web Browser
+    Design:
+        Controller Board
+            Solar Thermal Controller Board - Written using TI's Code Composer & C
+            UDP Output to 'Server'
+
+        Server
+            Go - Receives Controller Board UDP Data, 
+                 Converts data to JSON
+                 JSON sent to Python and the data is SSe'd to the browser.
+
+        Client
+            Normal HTML, CSS, and JavaScript.
+
+            Python
+                Retrieves data from Go process.  
+    Current Issues:
+        1. Display developed without using active sensor input
+        2. JSON messages can flood the browser causing UI updates to be slow
+        3. Develop interface to Controller Board for EEPROM updates
+        4. Transition UI from pre-beta to closer to production display
+        5. Initial page load error.  Once page is re-started, display is fine.
+        
+-->
+        
+<html>
+    <head>
+        <title>Test Viewer Head</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+        <link rel="shortcut icon" type="image/x-icon" href="Assets/Images/favicon.png" sizes="16x16" />
+        
+        <link rel="stylesheet" type="text/css" href="Assets/CSS/default.css">
+    </head>
+    <body>
+        
+        <div style="text-align:center">
+            <h2>Controller Telemetry  (Ver 0.7)</h2>
+        </div>
+        
+        <div class="grid">
+            <div class="col fixed EEPROM">
+                <li>EEPROM Settings</li>
+                <li>
+                    <p>Version:</p>
+                    <p id="EEPROM_Version">-</p>
+                </li>
+                <li>
+                    <p>Reboot Count:</p>
+                    <p id="EEPROM_RebootCount">-</p>
+                </li>
+                <li>
+                    <p>Processor Speed:</p>
+                    <p id="EEPROM_ProcessorSpeed">-</p>
+                </li>
+                <li>
+                    <p>Temperature Resolution:</p>
+                    <p id="EEPROM_TemperatureResolution">-</p>
+                </li>
+                <li>
+                    <p>Horizontal Adjustment:</p>
+                    <p id="EEPROM_HorizontalAdjustment">-</p>
+                </li>
+                <li>
+                    <p>Vertical Adjustment:</p>
+                    <p id="EEPROM_VerticalAdjustment">-</p>
+                </li>
+                <li>
+                    <p>Max Wind Speed:</p>
+                    <p id="EEPROM_Max_Wind_Speed">-</p>
+                </li>
+                <li>
+                    <p>Max Wind Speed Delay:</p>
+                    <p id="EEPROM_Max_Wind_Speed_Delay">-</p>
+                </li>
+                <li>
+                    <p>UART Telemetry:</p>
+                    <p id="EEPROM_UART_Telemetry">-</p>
+                </li>
+                <li>
+                    <p>UDP Telemetry:</p>
+                    <p id="EEPROM_UDP_Telemetry">-</p>
+                </li>
+                <li>
+                    <p>Use DNS:</p>
+                    <p id="EEPROM_Use_DNS">-</p>
+                </li>
+                <li>
+                    <p>UDP Port:</p>
+                    <p id="EEPROM_UDP_Port">-</p>
+                </li>
+                <li>
+                    <p>Server Name:</p>
+                    <p id="EEPROM_Server_Name">-</p>
+                </li>
+                <li>
+                    <p>Dark Threshold:</p>
+                    <p id="EEPROM_Dark_Threshold">-</p>
+                </li>
+                <li>
+                    <p>Delay Sudden Moveback:</p>
+                    <p id="EEPROM_Delay_Sudden_Moveback">-</p>
+                </li>
+                <li>
+                    <p>Move Threshold:</p>
+                    <p id="EEPROM_Move_Threshold">-</p>
+                </li>
+            </div>
+            <div class="col fixed TEMPS">
+                <li>Temperatures</li>
+                <li>
+                    <p>Dish Temp:</p>
+                    <p id="TEMP_F_0">-0.0 f-</p>
+                    <p id="TEMP_C_0">-0.0 c-</p>
+                    <p id="TEMP_M_0">-</p>
+                    <p id="TEMP_R_0">-</p>
+                <li>
+                <li>
+                    <p>Immediate Res.:</p>
+                    <p id="TEMP_F_1">-0.0 f-</p>
+                    <p id="TEMP_C_1">-0.0 c-</p>
+                    <p id="TEMP_M_1">-</p>
+                    <p id="TEMP_R_1">-</p>
+                <li>
+                <li>
+                    <p>Hold Res.:</p>
+                    <p id="TEMP_F_2">-0.0 f-</p>
+                    <p id="TEMP_C_2">-0.0 c-</p>
+                    <p id="TEMP_M_2">-</p>
+                    <p id="TEMP_R_2">-</p>
+                <li>
+                <li>
+                    <p>AUX Source:</p>
+                    <p id="TEMP_F_3">-0.0 f-</p>
+                    <p id="TEMP_C_3">-0.0 c-</p>
+                    <p id="TEMP_M_3">-</p>
+                    <p id="TEMP_R_3">-</p>
+                <li>
+                <li>
+                    <p>Dish To Res:</p>
+                    <p id="TEMP_F_4">-0.0 f-</p>
+                    <p id="TEMP_C_4">-0.0 c-</p>
+                    <p id="TEMP_M_4">-</p>
+                    <p id="TEMP_R_4">-</p>
+                <li>
+                <li>
+                    <p>Outside:</p>
+                    <p id="TEMP_F_5">-0.0 f-</p>
+                    <p id="TEMP_C_5">-0.0 c-</p>
+                    <p id="TEMP_M_5">-</p>
+                    <p id="TEMP_R_5">-</p>
+                <li>
+                <li>
+                    <p>Ground:</p>
+                    <p id="TEMP_F_6">-0.0 f-</p>
+                    <p id="TEMP_C_6">-0.0 c-</p>
+                    <p id="TEMP_M_6">-</p>
+                    <p id="TEMP_R_6">-</p>
+                <li>
+                <li>
+                    <p>Electronics:</p>
+                    <p id="TEMP_F_7">-0.0 f-</p>
+                    <p id="TEMP_C_7">-0.0 c-</p>
+                    <p id="TEMP_M_7">-</p>
+                    <p id="TEMP_R_7">-</p>
+                <li>
+                <li>
+                    <p>User Def 1:</p>
+                    <p id="TEMP_F_8">-0.0 f-</p>
+                    <p id="TEMP_C_8">-0.0 c-</p>
+                    <p id="TEMP_M_8">-</p>
+                    <p id="TEMP_R_8">-</p>
+                <li>
+                <li>
+                    <p>User Def 2:</p>
+                    <p id="TEMP_F_9">-0.0 f-</p>
+                    <p id="TEMP_C_9">-0.0 c-</p>
+                    <p id="TEMP_M_9">-</p>
+                    <p id="TEMP_R_9">-</p>
+                <li>
+                <li>
+                    <p>User Def 3:</p>
+                    <p id="TEMP_F_A">-0.0 f-</p>
+                    <p id="TEMP_C_A">-0.0 c-</p>
+                    <p id="TEMP_M_A">-</p>
+                    <p id="TEMP_R_A">-</p>
+                <li>
+                <li>
+                    <p>User Def 4:</p>
+                    <p id="TEMP_F_B">-0.0 f-</p>
+                    <p id="TEMP_C_B">-0.0 c-</p>
+                    <p id="TEMP_M_B">-</p>
+                    <p id="TEMP_R_B">-</p>
+                <li>
+                <li>
+                    <p>User Def 5:</p>
+                    <p id="TEMP_F_C">-0.0 f-</p>
+                    <p id="TEMP_C_C">-0.0 c-</p>
+                    <p id="TEMP_M_C">-</p>
+                    <p id="TEMP_R_C">-</p>
+                <li>
+                <li>
+                    <p>User Def 6:</p>
+                    <p id="TEMP_F_D">-0.0 f-</p>
+                    <p id="TEMP_C_D">-0.0 c-</p>
+                    <p id="TEMP_M_D">-</p>
+                    <p id="TEMP_R_D">-</p>
+                <li>
+                <li>
+                    <p>User Def 7:</p>
+                    <p id="TEMP_F_E">-0.0 f-</p>
+                    <p id="TEMP_C_E">-0.0 c-</p>
+                    <p id="TEMP_M_E">-</p>
+                    <p id="TEMP_R_E">-</p>
+                <li>
+                <li>
+                    <p>User Def 8:</p>
+                    <p id="TEMP_F_F">-0.0 f-</p>
+                    <p id="TEMP_C_F">-0.0 c-</p>
+                    <p id="TEMP_M_F">-</p>
+                    <p id="TEMP_R_F">-</p>
+                <li>
+            </div>
+            <div class="col fixed RUNTIME">
+                <li>Run Time</li>
+                <li>
+                    <p>Elapsed Seconds:</p>
+                    <p id="RUNTIME_Elapsed_Seconds">-1-</p>
+                </li>
+                <li>
+                    <p>Temperature Count:</p>
+                    <p id="RUNTIME_Temperature_Count">-1-</p>
+                </li>
+                <li>
+                    <p>Dish Count:</p>
+                    <p id="RUNTIME_Dish_Count">-1-</p>
+                </li>
+                <li>
+                    <p>Pump Count:</p>
+                    <p id="RUNTIME_Pump_Count">-1-</p>
+                </li>
+                <li>
+                    <p>ADC Count:</p>
+                    <p id="RUNTIME_ADC_Count">-1-</p>
+                </li>
+                <li>
+                    <p>UDP Commands:</p>
+                    <p id="RUNTIME_UDP_Listen">-1-</p>
+                </li>
+                <li>
+                    <p>Request Heat:</p>
+                    <p id="RUNTIME_Request_Heat">-1-</p>
+                </li>
+                <li>
+                    <p>Total Time Heat Requested:</p>
+                    <p id="RUNTIME_TT_Heat_Requested">-1-</p>
+                </li>
+                <li>
+                    <p>EEPROM Count:</p>
+                    <p id="RUNTIME_EEPROM_Count">-1-</p>
+                </li>
+                <li>
+                    <p>Data Output Count:</p>
+                    <p id="RUNTIME_DataOuput_Count">-1-</p>
+                </li>
+                <li>
+                    <p>Temp Pumps Cycles / Second:</p>
+                    <p id="RUNTIME_TempPumps_Second">-1-</p>
+                </li>
+                <li>
+                    <p>ADC Dish Cycles / Second:</p>
+                    <p id="RUNTIME_ADCDish_Second">-1-</p>
+                </li>
+            </div>
+        </div>
+           
+        <div class="grid2">    
+            <div class="col fixed DISH">
+                <li>Dish</li>
+                <li>
+                    <p>Right Low:</p>
+                    <p id="DISH_RightLow">-On-</p>
+                </li>
+                <li>
+                    <p>Left Low:</p>
+                    <p id="DISH_LeftLow">-On-</p>
+                </li>
+                <li>
+                    <p>Right High:</p>
+                    <p id="DISH_RightHigh">-On-</p>
+                </li>
+                <li>
+                    <p>Left High:</p>
+                    <p id="DISH_LeftHigh">-On-</p>
+                </li>
+                <li>
+                    <p>Result:</p>
+                    <p id="DISH_H_ResultCalc">-On-</p>
+                </li>
+                <li>
+                    <p>Move:</p>
+                    <p id="DISH_H_MoveFlag"></p>
+                </li>
+                <li>
+                    <p>Up Low:</p>
+                    <p id="DISH_UpLow">-On-</p>
+                </li>
+                <li>
+                    <p>Down Low:</p>
+                    <p id="DISH_DownLow">-On-</p>
+                </li>
+                <li>
+                    <p>Up High:</p>
+                    <p id="DISH_UpHigh">-On-</p>
+                </li>
+                <li>
+                    <p>Down High:</p>
+                    <p id="DISH_DownHigh">-On-</p>
+                </li>
+                <li>
+                    <p>Result:</p>
+                    <p id="DISH_V_ResultCalc">-On-</p>
+                </li>
+                <li>
+                    <p>Move:</p>
+                    <p id="DISH_V_MoveFlag"></p>
+                </li>
+            </div>
+            <div class="col fixed SEN_WSFP">
+                <li>Wind / Failsafe / Proximity</li>
+                <li>
+                    <p>Wind Speed:</p>
+                    <p id="SEN_WSFP_WindSpeed">-</p>
+                </li>
+                <li>
+                    <p>Wind Speed Status:</p>
+                    <p id="SEN_WSFP_WindStatus">-</p>
+                </li>
+                <li>
+                    <p>Failsafe:</p>
+                    <p id="SEN_WSFP_Failsafe">-</p>
+                </li>
+                <li>
+                    <p>Proximity Right:</p>
+                    <p id="SEN_WSFP_ProxRight">-</p>
+                </li>
+                <li>
+                    <p>Proximity Left:</p>
+                    <p id="SEN_WSFP_ProxLeft">-</p>
+                </li>
+                <li>
+                    <p>Proximity Up:</p>
+                    <p id="SEN_WSFP_ProxUp">-</p>
+                </li>
+                <li>
+                    <p>Proximity Down:</p>
+                    <p id="SEN_WSFP_ProxDown">-</p>
+                </li>
+            </div>        
+            <div class="col fixed PUMPS">
+                <li>Pumps</li>
+                <li>
+                    <p>Thermostat:</p>
+                    <p id="PUMP_Thermostat_On">-</p>
+                </li>
+                <li>
+                    <p>Dish Pump:</p>
+                    <p  id="PUMP_DishToResevoirPWMPercent">-</p>
+                    <p id="PUMP_DishToResevoirStatus">-</p>
+                </li>
+                <li>
+                    <p>Immed. Pump:</p>
+                    <p id="PUMP_Immd_ResevoirToHousePWMPercent">-</p>
+                    <p id="PUMP_Immd_ResevoirToHouseStatus">-</p>
+                </li>
+                <li>
+                    <p>Hold Pump:</p>
+                    <p id="PUMP_Hold_ResevoirToHousePWMPercent">-</p>
+                    <p id="PUMP_Hold_ResevoirToHouseStatus">-</p>
+                </li>
+                <li>
+                    <p>AUX Pump:</p>
+                    <p id="PUMP_AUXToResevoirPWMPercent">-</p>
+                    <p id="PUMP_AUXToResevoirStatus">-</p>
+                </li>
+            </div>
+        </div>    
+        
+        <div class="grid3">
+            <div class="col fixed DGP">
+                <li>
+                    <p>Data Group Processed:</p>
+                    <p id="Header"></p>
+                </li>   
+            </div> 
+        </div>     
+        <div class="grid4">    
+            <div class="col fixed EMP">    
+                <li>
+                    <p>Messages:</p>
+                    <p id="Error_Message"></p>
+                </li>    
+            </div>
+        </div>
+            
+        <script>
+            
+            var evtSource = new EventSource('/cgi-bin/Int_SSE.py');
+            
+            console.log('Credentials: ' + evtSource.withCredentials);
+            console.log('Ready State: ' + evtSource.readyState);
+            console.log('        URL: ' + evtSource.url);
+    
+            evtSource.onopen = function() {
+                console.log("Connection to server opened.");
+            };
+            
+            evtSource.onmessage = function(event) {
+                
+                // the incoming message is very simple JSON with the same format 
+                // for each message.  Instead of using a JSON parse, a manual parse
+                // was used in order to achive much greater performance...
+                var sData = event.data;
+                
+                var sElementID = "";
+                var sElementData = "";
+                var iParseCount = 0;
+                for (i = 0; i < sData.length; i++) { 
+                    if (sData[i] == '"')
+                        iParseCount++;
+                    else if (iParseCount == 3)
+                       sElementID += sData[i];
+                    else if (iParseCount == 7)
+                       sElementData += sData[i];
+                }
+
+                try {
+                    document.getElementById(sElementID).innerHTML = sElementData.toString();
+                } catch(err) {
+                    console.log("getElementById().innerHTML  Error: " + err + "  Element ID: " + sElementID + " Data: " + sElementData);
+                }
+            };
+            
+            evtSource.onerror = function() {
+                console.log("EventSource failed.");
+                evtSource.close();
+            };
+
+            allowScreenRedraw = function() {
+              console.log("allowScreenRedraw()");
+            };
+
+
+            // every 200ms, allow the page to update
+            console.log("Setting Up Interval");
+            window.setInterval(allowScreenRedraw, 100);
+            
+        </script>
+        
+    </body>
+</html>
